@@ -1,0 +1,14 @@
+pandas>=2.1
+numpy>=1.26
+pyyaml>=6.0
+python-dotenv>=1.0
+duckdb>=1.0
+streamlit>=1.35
+pytest>=8.0
+dbt-core>=1.8
+dbt-duckdb>=1.8          # local dbt target
+# --- Full-integration mode (optional, install when you have the services) ---
+# confluent-kafka>=2.4
+# snowflake-connector-python>=3.10
+# dbt-snowflake>=1.8
+# requests>=2.31           # Slack webhook alerts

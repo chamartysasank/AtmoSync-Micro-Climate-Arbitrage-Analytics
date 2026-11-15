@@ -1,0 +1,12 @@
+version: 2
+sources:
+  - name: raw
+    description: Raw landing tables (Snowflake schema RAW / DuckDB schema raw).
+    tables:
+      - name: raw_sensor_events
+        description: One row per IoT event. `payload` holds the original JSON message (VARIANT in Snowflake).
+      - name: raw_shipments
+      - name: raw_containers
+      - name: raw_commodities
+      - name: raw_locations
+      - name: raw_market_prices

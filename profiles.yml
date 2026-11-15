@@ -1,0 +1,20 @@
+# Two targets: `duckdb` (local, default) and `snowflake` (full integration).
+# Credentials come ONLY from environment variables - nothing secret is stored here.
+atmosync:
+  target: duckdb
+  outputs:
+    duckdb:
+      type: duckdb
+      path: "{{ env_var('ATMOSYNC_DUCKDB', '../data/processed/atmosync.duckdb') }}"
+      schema: analytics
+      threads: 4
+    snowflake:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'ATMOSYNC_ROLE') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'ATMOSYNC_WH') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE', 'ATMOSYNC') }}"
+      schema: ANALYTICS
+      threads: 4

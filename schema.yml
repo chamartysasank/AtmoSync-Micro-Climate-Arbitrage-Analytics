@@ -1,0 +1,49 @@
+version: 2
+models:
+  - name: stg_sensor_events
+    description: Cleaned, validated, de-duplicated sensor readings parsed from raw JSON.
+    columns:
+      - {name: event_id, tests: [not_null]}
+      - {name: container_id, tests: [not_null, {relationships: {to: ref('stg_containers'), field: container_id}}]}
+      - {name: reading_ts, tests: [not_null]}
+      - {name: temperature_c, tests: [not_null]}
+      - {name: humidity_pct, tests: [not_null]}
+    tests:
+      - unique:
+          column_name: "container_id || '|' || sensor_id || '|' || cast(reading_ts as varchar)"
+  - name: stg_shipments
+    columns:
+      - {name: shipment_id, tests: [unique, not_null]}
+      - {name: container_id, tests: [unique, not_null, {relationships: {to: ref('stg_containers'), field: container_id}}]}
+      - {name: planned_destination_id, tests: [{relationships: {to: ref('stg_locations'), field: location_id}}]}
+      - {name: commodity_id, tests: [{relationships: {to: ref('stg_commodities'), field: commodity_id}}]}
+  - name: stg_containers
+    columns: [{name: container_id, tests: [unique, not_null]}]
+  - name: stg_commodities
+    columns: [{name: commodity_id, tests: [unique, not_null]}]
+  - name: stg_locations
+    columns: [{name: location_id, tests: [unique, not_null]}]
+  - name: stg_market_prices
+    columns:
+      - {name: price_modal_usd_kg, tests: [not_null]}
+      - {name: market_id, tests: [{relationships: {to: ref('stg_locations'), field: location_id}}]}
+  - name: int_container_status
+    description: One row per container with consumed life, burn rate, quality window and risk.
+    columns:
+      - {name: container_id, tests: [unique, not_null]}
+      - {name: risk_category, tests: [{accepted_values: {values: [LOW, MEDIUM, HIGH, CRITICAL]}}]}
+      - {name: risk_score, tests: [not_null]}
+  - name: mart_container_health
+    columns: [{name: container_id, tests: [unique, not_null]}]
+  - name: mart_shipment_risk
+    columns: [{name: shipment_id, tests: [unique, not_null]}]
+  - name: mart_arbitrage_options
+    description: Candidate markets per container with quality-adjusted net value.
+  - name: mart_arbitrage_recommendations
+    columns:
+      - {name: container_id, tests: [unique, not_null]}
+      - {name: recommended_action, tests: [{accepted_values: {values: [REROUTE, MONITOR, NO_ACTION]}}]}
+  - name: mart_executive_kpis
+    columns: [{name: total_containers, tests: [not_null]}]
+  - name: mart_sensor_hourly
+  - name: mart_market_comparison

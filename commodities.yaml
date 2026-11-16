@@ -1,0 +1,14 @@
+# Commodity storage reference values. Only values with a citation are "facts";
+# everything else lives in settings.yaml and is tagged ASSUMPTION.
+avocado_hass:
+  display_name: Avocado (Hass)
+  temp_optimal_c: [5, 13]        # UC Davis Postharvest (mature-green, cultivar/duration dependent)
+  temp_best_c: 7.2               # WFLO Commodity Storage Manual 2018 (Hass best at 45F)
+  rh_optimal_pct: [85, 95]       # WFLO 85-90; Produce Blue Book 90-95
+  storage_life_weeks: [2, 4]     # WFLO (air storage)
+  chilling_note: "0-2C for >7 days causes pitting/scald (UC Davis via postharvest.biz summary)"
+  sources:
+    - https://postharvest.ucdavis.edu/produce-facts-sheets/avocado
+    - https://www.gcca.org/system/files/WFLO-Commodity-Storage-Manual-2018Avocados%5B1%5D_0.pdf
+    - https://www.producebluebook.com/wp-content/uploads/KYC/Avocado.pdf
+    - https://ucanr.edu/sites/Postharvest_Technology_Center_/files/231724.pdf

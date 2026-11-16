@@ -1,0 +1,65 @@
+# AtmoSync configuration. Every value tagged [SOURCE] is backed by a cited publication
+# (see docs/methodology/assumptions.md); every value tagged [ASSUMPTION] is a simplified
+# project assumption that should be reviewed with your mentor.
+
+mode: local                     # local | full
+paths:
+  sample_dir: data/sample
+  processed_dir: data/processed
+  duckdb_file: data/processed/atmosync.duckdb
+  tableau_dir: tableau/data_sources
+
+simulator:
+  seed: 42
+  end_ts: "2026-11-10T12:00:00Z"   # "now" for the sample run (fixed => reproducible)
+  interval_minutes: 15
+  avg_speed_kmph: 70               # [ASSUMPTION] incl. stops/driver rest
+  road_factor: 1.25                # [ASSUMPTION] road km = great-circle km x factor
+  setpoint_temp_c: 7.0             # [SOURCE] WFLO manual: Hass stores best near 7.2C
+  setpoint_rh_pct: 90.0            # [SOURCE] WFLO 85-90% / Produce Blue Book 90-95%
+  inject_faults: true              # duplicates, nulls, sentinel values for cleaning tests
+
+quality_model:                     # transparent heuristic, NOT a validated spoilage model
+  base_shelf_life_days: 21         # [SOURCE-based] WFLO: 2-4 weeks at optimum; midpoint used
+  reference_temp_c: 7.0            # [SOURCE] WFLO
+  q10: 2.5                         # [SOURCE-range] UC ANR: deterioration 2-3x per +10C; midpoint
+  chill_floor_c: 5.0               # below this, no extra shelf-life benefit is credited
+  rh_penalty_per_10pct: 0.25       # [ASSUMPTION] extra rate per 10 RH-points below rh_min
+  max_gap_hours: 1.0               # [ASSUMPTION] cap on time credited between two readings
+  recent_window_minutes: 60        # [ASSUMPTION] window defining the "current" burn rate
+  required_retail_shelf_hours: 72  # [ASSUMPTION] shelf life buyers expect on arrival
+  salvage_value_fraction: 0.10     # [ASSUMPTION] residual value of unsellable fruit
+  rate_cap: 4.0                    # [ASSUMPTION] burn-rate multiple that maxes the score
+
+thresholds:
+  temp_min_c: 5.0                  # [SOURCE] UC Davis: mature-green Hass 5-13C
+  temp_max_c: 13.0
+  rh_min_pct: 85.0                 # [SOURCE] WFLO 85-90 / Blue Book 90-95 -> union 85-95
+  rh_max_pct: 95.0                 # [ASSUMPTION] upper bound (condensation risk, general UC Davis guidance)
+  valid_temp_range_c: [-30, 60]    # sensor plausibility limits (data validation only)
+  valid_rh_range_pct: [0, 100]
+  valid_vibration_range_g: [0, 10]
+
+risk:
+  weights: {burn: 0.25, margin: 0.50, excursion: 0.15, consumed: 0.10}   # [ASSUMPTION]
+  slack_scale_hours: 72            # [ASSUMPTION]
+  high_slack_hours: 24             # [ASSUMPTION]
+  medium_score: 30                 # [ASSUMPTION]
+
+arbitrage:
+  transport_usd_per_tonne_km: 0.10 # [ASSUMPTION] reefer truck cost
+  handling_usd_per_kg: 0.03        # [ASSUMPTION]
+  reroute_fixed_fee_usd: 250       # [ASSUMPTION]
+  min_benefit_usd: 500             # [ASSUMPTION] ignore tiny gains
+  min_benefit_pct: 0.03            # [ASSUMPTION] of original-route net value
+
+alerts:
+  enabled: true
+  dry_run: true                    # set false + SLACK_WEBHOOK_URL / SMTP_* to send for real
+  min_benefit_usd: 500
+
+kafka:
+  bootstrap_servers: localhost:9092
+  topic: atmosync.sensor.events
+  dlq_topic: atmosync.sensor.events.dlq
+  consumer_group: atmosync-consumer

@@ -1,0 +1,2 @@
+commodity_id,display_name,temp_min_c,temp_max_c,temp_best_c,rh_min_pct,rh_max_pct,base_shelf_life_days,source
+avocado_hass,Avocado (Hass),5,13,7.2,85,95,21,UC Davis Postharvest; WFLO Commodity Storage Manual 2018; Produce Blue Book (see docs)

@@ -1,0 +1,12 @@
+location_id,name,latitude,longitude,is_market,location_type,data_origin
+PHARR_TX,"Pharr, TX (border crossing)",26.19,-98.18,False,origin,ASSUMPTION (approximate coordinates)
+OTAY_MESA_CA,"Otay Mesa, CA (border crossing)",32.55,-117.03,False,origin,ASSUMPTION (approximate coordinates)
+LOS_ANGELES,Los Angeles,34.05,-118.24,True,market,ASSUMPTION (approximate coordinates)
+PHOENIX,Phoenix,33.45,-112.07,True,market,ASSUMPTION (approximate coordinates)
+DENVER,Denver,39.74,-104.99,True,market,ASSUMPTION (approximate coordinates)
+DALLAS,Dallas,32.78,-96.8,True,market,ASSUMPTION (approximate coordinates)
+HOUSTON,Houston,29.76,-95.37,True,market,ASSUMPTION (approximate coordinates)
+CHICAGO,Chicago,41.88,-87.63,True,market,ASSUMPTION (approximate coordinates)
+ATLANTA,Atlanta,33.75,-84.39,True,market,ASSUMPTION (approximate coordinates)
+NEW_YORK,New York,40.71,-74.01,True,market,ASSUMPTION (approximate coordinates)
+SEATTLE,Seattle,47.61,-122.33,True,market,ASSUMPTION (approximate coordinates)

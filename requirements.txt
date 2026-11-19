@@ -5,6 +5,7 @@ python-dotenv>=1.0
 duckdb>=1.0
 streamlit>=1.35
 pytest>=8.0
+reportlab>=4.0          # Phase 2: PDF export (Batch 09)
 dbt-core>=1.8
 dbt-duckdb>=1.8          # local dbt target
 # --- Full-integration mode (optional, install when you have the services) ---

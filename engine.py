@@ -32,6 +32,30 @@ def add_reading_rates(clean: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     return df
 
 
+def risk_score(rate_recent: float, slack_h: float, excursion_share: float, consumed: float, cfg: dict) -> float:
+    """0-100 ranking score (weights in settings.yaml -> risk.weights). Shared with analytics/forecast.py."""
+    q, r = cfg["quality_model"], cfg["risk"]; w = r["weights"]
+    burn_c = float(np.clip((rate_recent - 1) / (q["rate_cap"] - 1), 0, 1))
+    margin_c = float(np.clip(1 - slack_h / r["slack_scale_hours"], 0, 1))
+    return 100 * (w["burn"] * burn_c + w["margin"] * margin_c + w["excursion"] * excursion_share + w["consumed"] * consumed)
+
+
+def risk_category(slack_h: float, score: float, cfg: dict) -> str:
+    r = cfg["risk"]
+    if slack_h <= 0: return "CRITICAL"
+    if slack_h < r["high_slack_hours"]: return "HIGH"
+    if score >= r["medium_score"]: return "MEDIUM"
+    return "LOW"
+
+
+def burn_rate_at(temp_c, rh_pct, cfg: dict):
+    """Shelf-life burn rate for given conditions (same formula as add_reading_rates). Works on scalars or arrays."""
+    q, th = cfg["quality_model"], cfg["thresholds"]
+    t_eff = np.maximum(temp_c, q["chill_floor_c"])
+    rh_def = np.maximum(th["rh_min_pct"] - rh_pct, 0)
+    return q["q10"] ** ((t_eff - q["reference_temp_c"]) / 10.0) * (1 + q["rh_penalty_per_10pct"] * rh_def / 10.0)
+
+
 def container_status(readings: pd.DataFrame, shipments: pd.DataFrame, locations: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     q, r, sim = cfg["quality_model"], cfg["risk"], cfg["simulator"]
     base_h = q["base_shelf_life_days"] * 24.0
@@ -50,15 +74,9 @@ def container_status(readings: pd.DataFrame, shipments: pd.DataFrame, locations:
         dist_km = float(haversine_km(last["latitude"], last["longitude"], d["latitude"], d["longitude"])) * sim["road_factor"]
         hours_to_dest = dist_km / sim["avg_speed_kmph"]
         slack_h = window_h - hours_to_dest
-        w = r["weights"]
-        burn_c = float(np.clip((rate_recent - 1) / (q["rate_cap"] - 1), 0, 1))
-        margin_c = float(np.clip(1 - slack_h / r["slack_scale_hours"], 0, 1))
+        score = risk_score(rate_recent, slack_h, float(g["is_excursion"].mean()), consumed, cfg)
         exc_share = float(g["is_excursion"].mean())
-        score = 100 * (w["burn"] * burn_c + w["margin"] * margin_c + w["excursion"] * exc_share + w["consumed"] * consumed)
-        if slack_h <= 0: cat = "CRITICAL"
-        elif slack_h < r["high_slack_hours"]: cat = "HIGH"
-        elif score >= r["medium_score"]: cat = "MEDIUM"
-        else: cat = "LOW"
+        cat = risk_category(slack_h, score, cfg)
         rows.append(dict(
             container_id=cid, shipment_id=s["shipment_id"], commodity_id=s["commodity_id"], quantity_kg=s["quantity_kg"],
             planned_destination_id=s["planned_destination_id"], as_of_ts=as_of, last_reading_ts=last["reading_ts"],

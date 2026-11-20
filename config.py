@@ -17,6 +17,13 @@ def load_settings(path: str | Path | None = None) -> dict:
     p = Path(path) if path else ROOT / "config" / "settings.yaml"
     with open(p, "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
+    # Phase 2: optional per-feature files config/features/*.yaml are merged under their own top-level keys.
+    feat_dir = p.parent / "features"
+    if feat_dir.is_dir():
+        for f in sorted(feat_dir.glob("*.yaml")):
+            with open(f, "r", encoding="utf-8") as fh:
+                for key, val in (yaml.safe_load(fh) or {}).items():
+                    cfg[key] = {**cfg.get(key, {}), **val} if isinstance(val, dict) and isinstance(cfg.get(key), dict) else val
     if os.getenv("KAFKA_BOOTSTRAP_SERVERS"):
         cfg["kafka"]["bootstrap_servers"] = os.environ["KAFKA_BOOTSTRAP_SERVERS"]
     return cfg

@@ -1,0 +1,12 @@
+# Feature 2 - Shipment health score (0-100). [ASSUMPTION] all weights / penalty scales are project defaults.
+health:
+  window_hours: 6                  # trailing window of readings used for each score
+  min_readings: 4                  # fewer readings in the window => no score
+  weights: {temperature: 0.50, humidity: 0.30, vibration: 0.20}
+  temp_full_penalty_c: 8.0         # mean deviation this far outside the temperature range => temperature sub-score 0
+  rh_full_penalty_pct: 25.0        # same for humidity (outside the RH range)
+  vibration_ok_g: 0.6              # vibration up to here is penalty-free
+  vibration_full_penalty_g: 1.5    # vibration at/above this => vibration sub-score 0
+  classes: {healthy: 80, warning: 60, at_risk: 40}   # >= healthy: Healthy; >= warning: Warning; >= at_risk: At Risk; else Critical
+  failure_floor: 15                # any sub-score at or below this ...
+  failure_cap: 39                  # ... caps the overall health at this value (=> 'Critical' with default classes)

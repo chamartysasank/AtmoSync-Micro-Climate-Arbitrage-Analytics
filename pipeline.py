@@ -5,7 +5,6 @@ import pandas as pd
 from common.config import load_settings, abs_path, get_logger
 from ingestion.cleaning import clean_sensor_events
 from analytics import engine as E
-from ingestion.quality import assess_quality
 
 log = get_logger(__name__)
 
@@ -27,7 +26,6 @@ def run_pipeline(cfg: dict | None = None, sample_dir: Path | None = None) -> dic
     p["modal_7d_avg"] = p.groupby(["market_id", "commodity_id"])["price_modal_usd_kg"].transform(lambda s: s.rolling(7, min_periods=1).mean())
     p["premium_vs_all_markets"] = p["price_modal_usd_kg"] - p.groupby(["commodity_id", "price_date"])["price_modal_usd_kg"].transform("mean")
     p["price_rank"] = p.groupby(["commodity_id", "price_date"])["price_modal_usd_kg"].rank(ascending=False, method="min").astype(int)
-    quality = assess_quality(raw, cfg)
-    return dict(quality=quality, raw=raw, clean=clean, rejected=rejected, readings=readings, status=status, options=options, recs=recs,
+    return dict(raw=raw, clean=clean, rejected=rejected, readings=readings, status=status, options=options, recs=recs,
                 kpis=E.executive_kpis(status, recs), hourly=E.hourly_series(readings), shipment_risk=shipment_risk,
                 market_comparison=p, locations=loc, cleaning_stats=pd.DataFrame([stats]))

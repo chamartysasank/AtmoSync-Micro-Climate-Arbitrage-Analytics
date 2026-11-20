@@ -1,0 +1,13 @@
+kpi,value,note,report_label
+Total containers,12,Phase 1,HEURISTIC / SIMULATED (see notes)
+Healthy (risk LOW),9,Phase 1 risk category,HEURISTIC / SIMULATED (see notes)
+At risk (risk MEDIUM/HIGH/CRITICAL),3,Phase 1 risk category,HEURISTIC / SIMULATED (see notes)
+Critical containers,1,Phase 1 risk category,HEURISTIC / SIMULATED (see notes)
+Average shipment health score,93.5,"0-100, heuristic",HEURISTIC / SIMULATED (see notes)
+Shipments Critical / At Risk by health,1 / 0,health classes,HEURISTIC / SIMULATED (see notes)
+Sensor anomalies (critical),138 (46),anomaly detection,HEURISTIC / SIMULATED (see notes)
+Containers expected below quality threshold within 24 h,3,HEURISTIC forecast,HEURISTIC / SIMULATED (see notes)
+Reroute opportunities (Phase 1 arbitrage),1,"heuristic, simulated prices",HEURISTIC / SIMULATED (see notes)
+Estimated reroute benefit (USD),56685.0,"heuristic, simulated prices",HEURISTIC / SIMULATED (see notes)
+Best market price margin (net USD/kg),0.795,SIMULATED prices,HEURISTIC / SIMULATED (see notes)
+Data quality score,99.3,status GOOD,HEURISTIC / SIMULATED (see notes)

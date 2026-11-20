@@ -1,0 +1,26 @@
+# Feature 1 - Sensor anomaly detection. `null` = inherit from `thresholds:` in settings.yaml.
+# [ASSUMPTION] values are project defaults, not validated limits.
+anomaly:
+  temp_warn_min_c: null            # inherits thresholds.temp_min_c (5.0, UC Davis mature-green range)
+  temp_warn_max_c: null            # inherits thresholds.temp_max_c (13.0)
+  temp_critical_margin_c: 3.0      # beyond the warn limit by this much => CRITICAL
+  rh_warn_min_pct: null            # inherits thresholds.rh_min_pct
+  rh_warn_max_pct: null            # inherits thresholds.rh_max_pct
+  rh_critical_margin_pct: 10.0
+  vibration_warn_g: 0.6            # simulated vibration is lognormal (median ~0.25 g)
+  vibration_critical_g: 1.0
+  # statistical check: z-score of a reading against the previous `stat_window` readings of the same container
+  stat_window: 12
+  stat_min_periods: 6
+  z_warn: 3.5
+  z_critical: 5.0
+  min_std: {temperature_c: 0.2, humidity_pct: 0.8, vibration_g: 0.05}   # floors std so flat data does not explode z
+  # rate of change per hour
+  roc_warn: {temperature_c: 3.0, humidity_pct: 25.0}
+  roc_critical: {temperature_c: 6.0, humidity_pct: 45.0}
+  # reporting gaps (minutes between consecutive readings of a container)
+  gap_warn_minutes: 45
+  gap_critical_minutes: 120
+  # stuck sensor: this many identical consecutive values
+  stuck_window: 8
+  invalid_severity: WARNING        # severity for null / sentinel / non-numeric / implausible readings

@@ -1,0 +1,11 @@
+# Feature 9 — Executive Analytics and Reporting (Batch 09)
+**Depends on:** Phase 1 results plus Batches 01–05 (anomalies, health, forecast, routes, markets) and Batch 07 (quality score in the KPIs). New dependency: **`reportlab`** (pure-Python PDF library, added to `requirements.txt`).
+
+**What it does.** Builds an executive report from existing results and exports it as CSV (bundle) and PDF. No new analytics are introduced; the report only assembles numbers already produced elsewhere.
+**Contents:** 12 KPIs (containers, healthy/at-risk/critical, average health, anomalies, containers expected below the quality threshold in 24 h, reroute opportunities and benefit, best market margin, data-quality score); tables for shipment health summary, at-risk and critical containers, market price comparison, top market margins, rerouting opportunities and route change recommendations.
+**Labelling (requirement):** every KPI and table has a `report_label` ("HEURISTIC …", "SIMULATED …", dataset type); the PDF opens with a *Data labels and limitations* box and every page carries a footer "SIMULATED sample data – heuristic estimates, not validated predictions"; CSV bundles include `README_LABELS.txt`. If you switch the price dataset to a real-derived one the label text follows the dataset type.
+**Configure:** `config/features/reporting.yaml` (title, export folder, PDF rows per table, forecast window, PDF compression — off by default so the text stays searchable).
+**Run:** `python -m analytics.reporting [--out folder]` → CSV files + `executive_report.pdf` in `reports/exports/`; UI **Reports** (KPI tiles, tabs per table, zip and PDF download buttons).
+**Example outputs (shipped):** `reports/exports/example_executive_report_sample_data.pdf`, `reports/exports/example_kpis_sample_data.csv` (12 containers, 9 healthy, 3 at risk, 1 critical, 1 reroute opportunity worth $56,685, data quality 99.3 — all simulated).
+**Tests:** `tests/test_reporting.py` (8 tests: KPIs equal Phase 1/other-module values, labels present, CSV bundle and zip, PDF validity and text, row limit, empty tables, compression toggle).
+**Limitations:** the PDF is a plain tabular layout (no charts); only the first N rows per table appear in the PDF (CSV is complete); the report reflects the sample dataset loaded by `run_pipeline`, not a live feed.

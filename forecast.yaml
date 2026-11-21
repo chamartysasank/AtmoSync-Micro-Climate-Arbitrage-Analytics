@@ -1,0 +1,13 @@
+# Feature 3 - spoilage-risk forecast. HEURISTIC extrapolation, NOT a validated predictive model.
+forecast:
+  horizons_hours: [6, 12, 24, 48]
+  trend_window_hours: 6            # readings used to fit the recent temperature / humidity trend
+  min_trend_points: 6
+  smoothing_points: 4              # "current level" = mean of the last N readings
+  trend_damping: 0.5               # [ASSUMPTION] share of the fitted slope assumed to continue (trends rarely persist unchanged)
+  temp_bounds_c: [0.0, 35.0]       # projections are clipped to this range
+  rh_bounds_pct: [30.0, 100.0]
+  scenarios:                       # use_trend: extrapolate slope; sigma: shift by this many recent std-devs in the harmful direction
+    hold:        {use_trend: false, sigma: 0.0}    # conditions stay exactly as now
+    trend:       {use_trend: true,  sigma: 0.0}    # recent (damped) trend continues
+    pessimistic: {use_trend: true,  sigma: 1.0}    # trend continues AND variability is one std-dev worse

@@ -1,0 +1,9 @@
+# Feature 6 - Alert Management Centre. (Separate from the Slack/e-mail `alerts:` block in settings.yaml, which still works.)
+# [ASSUMPTION] thresholds are project defaults.
+alert_center:
+  risk:      {warning_categories: [HIGH], critical_categories: [CRITICAL]}   # Phase 1 risk category
+  health:    {warning_below: 60, critical_below: 40}                          # health score (Feature 2)
+  anomaly:   {lookback_hours: 12, warning_count: 5, critical_count: 3}       # warning = >=5 flagged readings; critical = >=3 CRITICAL readings
+  forecast:  {scenario: trend, critical_within_hours: 12, warning_within_hours: 48}   # quality threshold crossing (Feature 3, heuristic)
+  arbitrage: {enabled: true}                                                  # REROUTE opportunities raise a WARNING-level alert
+  default_actor: operator

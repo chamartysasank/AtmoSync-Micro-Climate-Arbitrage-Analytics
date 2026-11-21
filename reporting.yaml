@@ -1,0 +1,8 @@
+# Feature 9 - executive analytics and reporting.
+reporting:
+  title: "AtmoSync Executive Report"
+  export_dir: reports/exports
+  top_n_rows: 15                   # max rows per table in the PDF (CSV exports are always complete)
+  pdf_compression: false           # false keeps text searchable in raw bytes (used by tests); set true for smaller files
+  forecast_scenario: trend
+  forecast_window_hours: 24        # KPI: containers expected to cross the quality threshold within this many hours

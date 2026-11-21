@@ -14,3 +14,9 @@ def cfg():
 def results(cfg):
     from analytics.pipeline import run_pipeline
     return run_pipeline(cfg)
+
+
+@pytest.fixture(autouse=True)
+def _isolated_ops_database(tmp_path, monkeypatch):
+    """Phase 2: app tables (alerts, history, pipeline logs) never touch the real data/processed database during tests."""
+    monkeypatch.setenv("ATMOSYNC_DUCKDB", str(tmp_path / "ops_test.duckdb"))

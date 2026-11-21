@@ -1,0 +1,27 @@
+# Feature 8 - simulation lab presets. All fault shapes are ILLUSTRATIVE (SIMULATED), not measured failure profiles.
+# *_frac values are fractions of the elapsed trip time so presets work for any route length.
+simulation_lab:
+  defaults: {origin_id: PHARR_TX, destination_id: CHICAGO, progress: 0.5, quantity_kg: 20000, pre_loading_consumed: 0.60, seed: 7,
+             temp_noise_c: 0.15, rh_noise_pct: 1.2, vibration_median_g: 0.25, vibration_sigma: 0.35}
+  presets:
+    normal:              {description: "Reefer holds setpoint", spikes: [], drift: null, humidity: {fluctuation_amp_pct: 0, period_h: 6, drop_start_frac: 0, drop_rate_pct_per_h: 0}, vibration_bursts: []}
+    temperature_spike:   {description: "Door opened / loading delay: one short warm spike",
+                          spikes: [{start_frac: 0.5, duration_h: 1.5, magnitude_c: 8.0}], drift: null,
+                          humidity: {fluctuation_amp_pct: 0, period_h: 6, drop_start_frac: 0, drop_rate_pct_per_h: 0}, vibration_bursts: []}
+    cooling_drift:       {description: "Slow loss of cooling capacity", spikes: [],
+                          drift: {start_frac: 0.3, rate_c_per_h: 0.7, max_add_c: 10.0},
+                          humidity: {fluctuation_amp_pct: 0, period_h: 6, drop_start_frac: 0.3, drop_rate_pct_per_h: 0.2}, vibration_bursts: []}
+    compressor_failure:  {description: "Fast warm-up after compressor failure", spikes: [],
+                          drift: {start_frac: 0.2, rate_c_per_h: 1.2, max_add_c: 16.0},
+                          humidity: {fluctuation_amp_pct: 0, period_h: 6, drop_start_frac: 0.2, drop_rate_pct_per_h: 0.3}, vibration_bursts: []}
+    humidity_fluctuation: {description: "Humidity swings (defrost cycles / vent problems)", spikes: [], drift: null,
+                          humidity: {fluctuation_amp_pct: 8.0, period_h: 3.0, drop_start_frac: 0, drop_rate_pct_per_h: 0}, vibration_bursts: []}
+    low_humidity:        {description: "Steady humidity loss", spikes: [], drift: null,
+                          humidity: {fluctuation_amp_pct: 0, period_h: 6, drop_start_frac: 0.3, drop_rate_pct_per_h: 1.0}, vibration_bursts: []}
+    vibration_anomaly:   {description: "Rough road / loose cargo: vibration bursts", spikes: [], drift: null,
+                          humidity: {fluctuation_amp_pct: 0, period_h: 6, drop_start_frac: 0, drop_rate_pct_per_h: 0},
+                          vibration_bursts: [{start_frac: 0.6, duration_h: 2.0, multiplier: 4.0}]}
+    combined_failure:    {description: "Warm drift plus humidity loss plus rough road", spikes: [],
+                          drift: {start_frac: 0.3, rate_c_per_h: 0.8, max_add_c: 12.0},
+                          humidity: {fluctuation_amp_pct: 3.0, period_h: 4.0, drop_start_frac: 0.3, drop_rate_pct_per_h: 0.6},
+                          vibration_bursts: [{start_frac: 0.5, duration_h: 3.0, multiplier: 3.0}]}

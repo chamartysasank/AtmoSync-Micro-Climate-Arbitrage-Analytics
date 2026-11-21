@@ -1,0 +1,9 @@
+# Feature 7 - data quality monitoring. [ASSUMPTION] weights and alert thresholds are project defaults.
+data_quality:
+  expected_interval_minutes: null  # null = simulator.interval_minutes
+  required_fields: [event_id, container_id, sensor_id, shipment_id, reading_ts, temperature_c, humidity_pct, vibration_g]
+  weights: {completeness: 0.40, validity: 0.40, uniqueness: 0.10, timeliness: 0.10}
+  warning_below: 90                # overall score (0-100) -> WARNING alert
+  critical_below: 75               # -> CRITICAL alert
+  stale_minutes: 60                # a container is 'stale' if its last reading is older than this vs the newest reading overall
+  report_dir: reports/data_quality

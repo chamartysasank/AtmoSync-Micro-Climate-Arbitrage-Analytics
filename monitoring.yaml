@@ -1,0 +1,9 @@
+# Feature 10 - system monitoring. [ASSUMPTION] thresholds are project defaults.
+monitoring:
+  max_run_age_hours: 24            # WARN if the last pipeline run is older than this
+  error_warn_count: 1              # ERROR log lines / failed steps in the last 24 h
+  error_fail_count: 5
+  rejection_warn_pct: 5.0          # share of raw rows rejected by cleaning
+  rejection_fail_pct: 15.0
+  log_level_capture: INFO          # log records at or above this level are stored per run
+  log_retention_days: 30

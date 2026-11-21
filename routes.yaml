@@ -1,0 +1,9 @@
+# Feature 4 - route comparison. [ASSUMPTION] all sensitivities are illustrative; route profiles are SAMPLE data.
+routes:
+  profiles_file: data/sample/route_profiles.csv
+  baseline_profile: DIRECT
+  baseline_exposure_index: 0.5     # exposure index at which no extra burn is applied
+  exposure_sensitivity: 0.30       # burn-rate multiplier = 1 + sensitivity * (exposure_index - baseline)
+  baseline_vibration_index: 0.3
+  vibration_haircut_max: 0.02      # quality-multiplier haircut per 1.0 of vibration index above baseline (floored at 0)
+  top_alternatives: 3

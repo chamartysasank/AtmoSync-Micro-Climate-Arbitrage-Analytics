@@ -3,6 +3,7 @@
 In full-integration mode the same tables could live in Snowflake; only the local equivalent is implemented here."""
 from __future__ import annotations
 from contextlib import contextmanager
+import os
 from pathlib import Path
 import duckdb
 import pandas as pd
@@ -25,9 +26,19 @@ def _evolve(con, table: str, df: pd.DataFrame) -> None:
             con.execute(f'alter table ops.{table} add column "{c}" {_sql_type(df[c].dtype)}')
 
 
+def _prepare(df: pd.DataFrame) -> pd.DataFrame:
+    """All-null object columns have no inferable type in DuckDB -> store them as VARCHAR."""
+    df = df.copy()
+    for c in df.columns:
+        if df[c].dtype == object and df[c].isna().all():
+            df[c] = df[c].astype("string")
+    return df
+
+
 class Store:
     def __init__(self, db_path: str | Path | None = None):
-        self.db_path = Path(db_path) if db_path else abs_path(load_settings()["paths"]["duckdb_file"])
+        env = os.getenv("ATMOSYNC_DUCKDB")          # same variable as dbt_project/profiles.yml
+        self.db_path = Path(db_path) if db_path else (Path(env) if env else abs_path(load_settings()["paths"]["duckdb_file"]))
 
     @contextmanager
     def connect(self):
@@ -47,6 +58,7 @@ class Store:
         """Insert rows; rows whose key already exists are replaced. Creates the table on first use."""
         if df.empty:
             return 0
+        df = _prepare(df)
         with self.connect() as con:
             con.register("_incoming", df)
             exists = con.execute("select count(*) from information_schema.tables where table_schema='ops' and table_name=?", [table]).fetchone()[0]
@@ -63,6 +75,7 @@ class Store:
     def append_df(self, table: str, df: pd.DataFrame) -> int:
         if df.empty:
             return 0
+        df = _prepare(df)
         with self.connect() as con:
             con.register("_incoming", df)
             if not con.execute("select count(*) from information_schema.tables where table_schema='ops' and table_name=?", [table]).fetchone()[0]:
